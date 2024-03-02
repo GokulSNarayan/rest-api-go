@@ -13,7 +13,7 @@ type recipeStore interface {
 	Get(name string) (recipes.Recipe, error)
 	List() (map[string]recipes.Recipe, error)
 	Update(name string, recipe recipes.Recipe) error
-	Delete(name string) error
+	Remove(name string) error
 }
 
 type RecipesHandler struct {
@@ -29,11 +29,25 @@ func (h *homeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	store := recipes.NewMemStore()
+    recipesHandler := NewRecipesHandler(store)
 	router := mux.NewRouter()
 
 	home := &homeHandler{}
 
-	router.Handle(("/"), home)
+	router.HandleFunc("/", home.ServeHTTP)
+    router.HandleFunc("/recipes", recipesHandler.ListRecipes).Methods("GET")
+    router.HandleFunc("/recipes", recipesHandler.CreateRecipe).Methods("POST")
+    router.HandleFunc("/recipes/{id}", recipesHandler.GetRecipe).Methods("GET")
+    router.HandleFunc("/recipes/{id}", recipesHandler.UpdateRecipe).Methods("PUT")
+    router.HandleFunc("/recipes/{id}", recipesHandler.DeleteRecipe).Methods("DELETE")
 
 	http.ListenAndServe(":3001", router)
 }
+
+
+func (h RecipesHandler) CreateRecipe(w http.ResponseWriter, r *http.Request) {}
+func (h RecipesHandler) ListRecipes(w http.ResponseWriter, r *http.Request) {}
+func (h RecipesHandler) GetRecipe(w http.ResponseWriter, r *http.Request) {}
+func (h RecipesHandler) UpdateRecipe(w http.ResponseWriter, r *http.Request) {}
+func (h RecipesHandler) DeleteRecipe(w http.ResponseWriter, r *http.Request) {}
