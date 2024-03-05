@@ -63,7 +63,7 @@ func (h *RecipesHandler) CreateRecipes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Write the response
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 }
 func (h *RecipesHandler) ListRecipes(w http.ResponseWriter, r *http.Request)   {
 	recipes, err := h.store.List()
